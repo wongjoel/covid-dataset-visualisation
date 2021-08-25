@@ -58,6 +58,7 @@
     [:li "The previous 14 days from the generation date are calculated"]
     [:li "For each date, for each local health district, the number of rows containing the given local health district are counted"]
     [:li "The data is then formatted into the above visualisation"]]
+   [:p "The code used to produce the visualisation can be found at " [:a {:href "https://github.com/wongjoel/covid-dataset-visualisation"} "https://github.com/wongjoel/covid-dataset-visualisation"]]
    ])
 
 (defn temp-fix-vega-lite-version
@@ -70,9 +71,19 @@
     #"https://cdn.jsdelivr.net/npm/vega-lite@4.17.0"
     "https://cdn.jsdelivr.net/npm/vega-lite@5")))
 
+(defn add-newlines
+  [path]
+  (spit
+   path
+   (clojure.string/replace
+    (slurp path)
+    #"</p>"
+    "</p>\n")))
+
 (defn export!
   #_(export! hiccup "/test.html")
   "Wraps `oz/export!` with some niceties"
   [hiccup filepath]
   (oz/export! hiccup filepath {:header-extras [[:script {:type "text/javascript"} (str "document.title = \"Covid Visualisation\";")]]})
-  (temp-fix-vega-lite-version filepath))
+  (temp-fix-vega-lite-version filepath)
+  (add-newlines filepath))
