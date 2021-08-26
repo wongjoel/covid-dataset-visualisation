@@ -3,7 +3,8 @@
   (:require
    [oz.core :as oz])
   (:import
-   (java.time LocalDate LocalDateTime)))
+   (java.time LocalDate LocalDateTime)
+   (java.time.format DateTimeFormatter)))
 
 (defn chart-spec
   [chart-data region-seq partial-date]
@@ -37,7 +38,7 @@
   [:section
    [:h1 "NSW Covid-19 cases by notification date and location"]
    chart-spec
-   [:p "Chart generated at: " (str (LocalDateTime/now)) ", underlying data last updated at " (str last-update)]
+   [:p "Chart generated at: " (.format (DateTimeFormatter/ofPattern "yyyy-MM-dd HH:mm:ss") (LocalDateTime/now)) ", underlying data last updated at " (.format (DateTimeFormatter/ofPattern "yyyy-MM-dd HH:mm:ss") last-update)]
    [:p "This is a visualisation of the "
     [:a {:href "https://data.nsw.gov.au/data/dataset/aefcde60-3b0c-4bc0-9af1-6fe652944ec2"} "NSW Covid-19 cases by notification date and location"]
     " dataset, which is part of the "

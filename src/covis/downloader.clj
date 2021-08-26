@@ -1,7 +1,8 @@
 (ns covis.downloader
   (:require [clj-http.client :as client]
             [clojure.data.json :as json])
-  (:import (java.time LocalDate LocalDateTime)))
+  (:import (java.time LocalDate LocalDateTime ZonedDateTime ZoneId)
+           (java.time.format DateTimeFormatter)))
 
 (defn gen-date-seq
   #_(gen-date-seq (LocalDate/parse "2020-01-01") (LocalDate/parse "2020-02-01"))
@@ -14,8 +15,10 @@
   [{:keys [metadata-url]}]
   (let [response (client/get metadata-url)
         body (json/read-str (:body response))
-        datetime-str (get (first (get-in body ["result" "resources"])) "last_modified")]
-    (LocalDateTime/parse datetime-str)))
+        datetime-str (get (first (get-in body ["result" "resources"])) "last_modified")
+        formatter (DateTimeFormatter/ofPattern "yyyy-MM-dd'T'HH:mm:ss.nX")
+        datetime (.withZoneSameInstant (ZonedDateTime/parse (str datetime-str "Z") formatter) (ZoneId/systemDefault))]
+    (.toLocalDateTime datetime)))
 
 (defn simple-sql-get!
   [url sql]
